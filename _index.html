@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telphone=no, email=no, address=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>美食菜谱</title>
+    <link rel="stylesheet" href="/Public/cookMobile/css/normalize.css">
+    <link rel="stylesheet" href="/Public/cookMobile/css/swiper.min.css">
+    <style>
+        :root {
+            --100vw: 100vw;
+            --c74: #74d56f;
+            --c62: #62b66c;
+        }
+        [v-cloak] {
+            display: none;
+        }
+        html {
+            font-size: calc(var(--100vw) / 7.5);
+            background-color: #f1f1f1;
+        }
+        @media (min-width: 560px) {
+          html {
+            font-size: 54px;
+          }
+        }
+
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+            width: 6rem;
+            height: 6rem;
+        }
+
+        .swiper-wrap {
+            padding: .2rem 0;
+            margin-bottom: .2rem;
+            background-color: #fff;
+        }
+
+        .section {
+            padding-top: .2rem;
+            background-color: #fff;
+        }
+
+        .section_title {
+            position: relative;
+            padding-left: .25rem;
+            padding-top: .2rem;
+            padding-bottom: .2rem;
+            margin: 0 .2rem;
+            font-size: .34rem;
+        }
+
+        .section_title:after {
+            position: absolute;
+            content: '';
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: .36rem;
+            width: .08rem;
+            background: linear-gradient(to bottom, #74d56f, #62b66c);
+        }
+
+        .filter-mini {
+            display: flex;
+            align-items: center;
+            padding: 0 .2rem;
+            background-color: #fff;
+        }
+        .filter-mini.fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 888;
+        }
+        .tabs-wrap {
+            height: .86rem;
+        }
+        .tabs {
+            flex: 1;
+            padding: .15rem 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            over-flow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tabs > li {
+            position: relative;
+            display: inline-block;
+            width: 1.6rem;
+            height: .56rem;
+            line-height: .56rem;
+            text-align: center;
+            margin-right: .15rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tabs > li:after {
+            position: absolute;
+            content: '';
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            border: 1px solid #ddd;
+            border-radius: 1rem;
+            box-sizing: border-box;
+            transform-origin: top left;
+            -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+        }
+
+        @media only screen and (-webkit-min-device-pixel-ratio: 3.0) {
+            .tabs > li:after {
+                width: 300%;
+                height: 300%;
+                -webkit-transform: scale(0.333333);
+                transform: scale(0.333333);
+            }
+        }
+
+        .tabs > li.active {
+            color: #6dc96e;
+        }
+
+        .tabs > li.active:after {
+            border-color: #6dc96e;
+        }
+
+        .filter-mini_more {
+            display: block;
+            width: 1rem;
+            padding: .08rem 0;
+            text-align: right;
+            color: #999;
+            box-shadow: -6px 0 6px -6px rgba(0, 0, 0, .4);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .filter-mini_more > .icon {
+            width: .25rem;
+            height: .25rem;
+            margin-top: -1px;
+        }
+
+        .menus {
+            position: relative;
+            margin-top: 10px;
+            padding-bottom: 10px;
+            background: linear-gradient(to bottom, #ffffff, #eeeeee);
+        }
+
+        .menu {
+            padding: 5px;
+        }
+
+        .menu > a {
+            border-radius: .12rem;
+            background-color: #fff;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+        }
+
+        .menu_figcaption {
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .menu_figcaption em {
+            font-size: 16px;
+            font-style: normal;
+        }
+
+        .menu_hot {
+            display: flex;
+            align-items: center;
+            color: #999;
+        }
+
+        .menu_hot .icon {
+            color: #ff2e2e;
+        }
+        .mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,.6);
+            z-index: 990;
+        }
+        .section-filter {
+            position: fixed;
+            top: 0;
+            left: 1rem;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .section_title-filter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            z-index: 10;
+        }
+
+        .filter-sq {
+            display: flex;
+            align-items: center;
+            float: right;
+            padding: .08rem 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: #999;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .filter-sq .icon {
+            width: .3rem;
+            height: .3rem;
+            margin-top: -2px;
+        }
+
+        .filter-wrap {
+            height: 100%;
+            padding-top: .9rem;
+            padding-bottom: 1rem;
+            box-sizing: border-box;
+            overflow-x: auto;
+            over-flow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter {
+            padding: 0 .3rem;
+        }
+
+        .filter_item {
+            margin-bottom: .2rem;
+        }
+
+        .filter_item > dt {
+            line-height: .7rem;
+            color: #999;
+        }
+
+        .filter_cell {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .filter_cell > span {
+            position: relative;
+            display: block;
+            width: 1.6rem;
+            height: .64rem;
+            line-height: .64rem;
+            text-align: center;
+            margin-bottom: .2rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .filter_cell > span.active {
+            color: #6dc96e;
+        }
+
+        .filter_cell > span {
+            margin-right: .2rem;
+        }
+
+        .filter_cell > span:after {
+            position: absolute;
+            content: '';
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            border: 1px solid #ddd;
+            border-radius: 1rem;
+            box-sizing: border-box;
+            transform-origin: left top;
+            -webkit-transform: scale(0.5);
+            transform: scale(0.5);
+            z-index: 5;
+        }
+
+        .filter_cell > span.active:after {
+            border-color: #6dc96e;
+        }
+
+        @media only screen and (-webkit-min-device-pixel-ratio: 3.0) {
+            .filter_cell > span:after {
+                width: 300%;
+                height: 300%;
+                -webkit-transform: scale(0.333333);
+                transform: scale(0.333333);
+            }
+        }
+
+        .filter-btm {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .filter-cancel {
+            width: 40%;
+            border-top: .5px solid #f1f1f1;
+            background-color: #fff;
+        }
+
+        .filter-btm > a {
+            height: .85rem;
+            line-height: .85rem;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .filter-ok {
+            width: 60%;
+            border-top: .5px solid #df3327;
+            background-color: #df3327;
+            color: #fff;
+        }
+
+        @media only screen and (-webkit-min-device-pixel-ratio: 3.0) {
+            .filter-cancel {
+                border-top: .33333px solid #f1f1f1;
+            }
+
+            .filter-ok {
+                border-top: .33333px solid #df3327;
+            }
+        }
+
+        .loading-more {
+            text-align: center;
+            padding: .2rem;
+            color: #999;
+            background-color: #eee;
+        }
+
+        .loading-more > .icon {
+        	width: .3rem;
+        	height: .3rem;
+        	margin-right: .1rem;
+        	animation: rotateLoading 1s linear infinite;
+        }
+
+        .filter-move-enter,
+        .filter-move-leave-to {
+            transform: translate3d(100%,0,0);
+        }
+
+        .filter-move-enter-active,
+        .filter-move-leave-active {
+            transition: transform .5s;
+        }
+
+        .filter-move-enter-to, 
+        .filter-move-leave {
+            transform: translate3d(0,0,0);
+        }
+        .filter-open {
+            position: fixed;
+            width: 100%;
+        }
+        .fade-enter,
+        .fade-leave-to {
+            opacity: 0;
+        }
+        .fade-enter-active,
+        .fade-leave-active {
+            transition: opacity .3s;
+        }
+        .filter-move-enter-to, 
+        .filter-move-leave {
+            opacity: 1;
+        }
+
+        .filter_cell > span {
+          transition: transform 1s, opacity 1s;
+          display: inline-block;
+        }
+        .list-complete-enter, .list-complete-leave-to {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        .list-complete-leave-active {
+          position: absolute;
+        }
+        
+    </style>
+</head>
+<body>
+<main id="app" v-cloak>
+    <section class="swiper-wrap">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"
+                     style="background-image: url(http://www.7typ.cn/uploads/image/2016-07-28/57996e22682c8.jpg);"></div>
+                <div class="swiper-slide"
+                     style="background-image: url(http://www.7typ.cn/uploads/image/2016-07-28/57996e22682c8.jpg);"></div>
+                <div class="swiper-slide"
+                     style="background-image: url(http://www.7typ.cn/uploads/image/2016-07-28/57996e22682c8.jpg);"></div>
+            </div>
+
+        </div>
+    </section>
+    <transition name="fade">
+        <section class="section">
+            <h2 class="section_title">今日菜单</h2>
+            <div ref="fmini" class="tabs-wrap">
+                <div :class="['filter-mini', {fixed: fmini}]">
+                    <ul class="tabs">
+                        <li v-for="(item,i) in filterMini.content" @click="fMiniHandle(i)" :class="{active: i==filterMini.active}">{{item.name}}</li>
+                    </ul>
+                    <span @click="filterMore" class="filter-mini_more">更多<svg class="icon" aria-hidden="true"><use
+                            xlink:href="#icon-return"></use></svg></span>
+                </div>
+            </div>
+        
+            <waterfall
+                class="menus"
+                align="center"
+                :line-gap="screenWidth/2 - 5"
+                :watch="menus"
+              >
+                <!-- each component is wrapped by a waterfall slot -->
+                <waterfall-slot
+                  class="menu"
+                  v-for="(item, index) in menus"
+                  :width="item.imgInfo.w"
+                  :height="item.imgInfo.h"
+                  :order="index"
+                  :key="index"
+                  style="padding: 5px;"
+                >
+                  <a :href="`{sp:U('_detail')}?id=${item.id}`">
+                        <img class="menu_img" :src="item.thumb">
+                        <div class="menu_figcaption">
+                            <em>{{item.name}}</em>
+                            <p class="menu_hot">
+                                <svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-renqi"></use>
+                                </svg>
+                                <span>{{item.view}}</span>
+                            </p>
+                        </div>
+                    </a>
+                </waterfall-slot>
+            </waterfall>
+        </section>
+    </transition>
+    <div v-if="filter" class="mask"></div>
+    <transition name="filter-move">
+        <section v-if="filter" class="section section-filter">
+            <h2 class="section_title section_title-filter">今日菜单
+                <div class="filter-sq"><span @click="toggleFilter">收起</span>
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-enter"></use>
+                    </svg>
+                </div>
+            </h2>
+            <div v-if="menus.length > 0" class="filter-wrap">
+                <div class="filter">
+                    <dl v-for="(item1,i1) in classifyA.content" class="filter_item">
+                        <dt>{{item1.name}}</dt>
+                        
+                        <transition-group name="list-complete" tag="dd" class="filter_cell">
+                            <span v-for="(item2,i2) in filterCpt(i1, 'A')" :class="{active: i1==classifyA.active[0]&&i2==classifyA.active[1]}"  @click="checkedA(i1,i2)" :key="item2.name">{{item2.name}}</span>
+                            <span @click="moreHandleA(i1)" :key="item1.name" v-if="classifyA.stateMore[i1] != 0">{{classifyA.stateMore[i1]==1?'更多分类...':'收起'}}</span>
+                        </transition-group>
+                            
+                        
+                    </dl>
+                    <dl v-for="(item1,i1) in classifyC.content" class="filter_item">
+                        <dt>{{item1.name}}</dt>
+                        <transition-group name="list-complete" tag="dd" class="filter_cell">
+                            <span v-for="(item2,i2) in filterCpt(i1, 'C')" :class="{active: returnB(i1,i2)}"  @click="checkedC(i1,i2)" :key="item2.name">{{item2.name}}</span>
+                            <span @click="moreHandleC(i1)" :key="item1.name" v-if="classifyC.stateMore[i1] != 0">{{classifyC.stateMore[i1]==1?'更多分类...':'收起'}}</span>
+                        </transition-group>
+                    </dl>
+                </div>
+            </div>
+            <div class="filter-btm">
+                <a class="filter-cancel" @click="toggleFilter" href="javascript:;">取消</a>
+                <a class="filter-ok" @click="submitFilter" href="javascript:;">确认</a>
+            </div>
+        </section>
+    </transition>
+    <div ref="hasBottom"></div>
+    <p v-show="more!=0" class="loading-more">
+    	<svg v-if="more==1" class="icon" aria-hidden="true">
+          <use xlink:href="#icon-jiazaizhong"></use>
+        </svg>
+        <span>{{more==1?'加载中...':'没有更多'}}</span>
+    </p>
+    
+</main>
+
+<script src="/Public/cookMobile/js/font.js"></script>
+<script src="/Public/lib/axios/axios.min.js"></script>
+<script src="/Public/cookMobile/js/swiper.min.js"></script>
+<script src="/Public/cookMobile/js/vue.js"></script>
+<script src="/Public/lib/vue/vue-waterfall.min.js"></script>
+
+<script>
+    Vue.prototype.tips =  {
+        msg(title) {
+            let node = document.createElement('p')
+            node.style.cssText = 'position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);z-index: 1000;padding: .2rem .3rem;border-radius: .12rem;font-size: 16px;color: #fff;background-color: rgba(0,0,0,.5);'
+            node.innerText = title
+
+            document.body.appendChild(node)
+
+            setTimeout(() => {
+                document.body.removeChild(node)
+            }, 3000)
+        },
+        showLoading: (function() {
+            
+            let getSingle = function( fn ){
+              let result = null
+
+              return function(){
+
+                return result || ( result = fn.apply(this, arguments) )
+              }
+            }
+
+            function createNode() {
+
+                let style = document.createElement('style')
+                let node = document.createElement('div')
+
+                style.innerHTML = `.loading {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    padding: .6rem;
+                    border-radius: .14rem;
+                    z-index: 1100;
+                    background-color: rgba(0,0,0,.5);
+                }
+                .loading .icon {
+                    width: .6rem;
+                    height: .6rem;
+                    color: #3498db;
+                    animation: rotateLoading .9s linear infinite;
+                }
+
+                @keyframes rotateLoading {
+                    100% { transform: rotate(-360deg); }
+                }`
+
+                node.setAttribute('class', 'loading')
+                node.innerHTML = '<svg class="icon" aria-hidden="true"><use xlink:href="#icon-icon_jiazaizhong"></use></svg>'
+
+                document.head.appendChild(style)
+                document.body.appendChild(node)
+
+                return node
+            }
+            
+            return getSingle(createNode)
+        })(),  
+    }
+
+    var vm = new Vue({
+        el: '#app',
+        components: {
+          'waterfall': Waterfall.waterfall,
+          'waterfall-slot': Waterfall.waterfallSlot
+        },
+        data: {
+            filter: false,
+            menus: [],
+            more: 0, //0隐藏 1有更多 2无更多(本次筛选不再请求)
+            fmini: false,
+            screenWidth: 0,
+            filterMini: {
+                active: -1,
+                checked: [],
+                content: []
+            },
+            classifyA: {
+            	active: [],
+            	checked: [],
+                stateMore: [],
+            	content: []
+            },
+            classifyC: {
+            	active: [],
+            	checked: [],
+                stateMore: [],
+            	content: []
+            },
+        },
+        created () {
+            let node = this.tips.showLoading()
+
+            this.screenWidth = window.screen.width
+            this.getMenu().then(res => {
+            	
+                node.style.display = 'none'
+
+            	if (res.data.status) {
+            		this.filterMini.content.push(...res.data.top)
+                    if (res.data.material.length > 0) {
+                        this.menus.push(...this.menusCompute(res.data.material))
+                    } else {
+                        // 没有更多数据
+                        
+                    }
+            	} else {
+            		console.log(res.data.error)
+            	}
+            }).catch(error => {
+            	console.log(error)
+            })
+        },
+        mounted () {
+
+            let fmini = this.$refs.fmini
+            let bottom = this.$refs.hasBottom
+            let io = new IntersectionObserver((entries) => {
+                let item = entries[0]
+
+                if (item.target === fmini) {
+                    if (item.isIntersecting) {
+                        this.fmini = false
+                    } else {
+                        this.fmini = true
+                    }
+                } else if (item.target === bottom && item.isIntersecting) {
+                    const conditionArr = [...this.classifyA.checked,...this.classifyC.checked]
+                    const condition = conditionArr.length > 0 ? JSON.stringify(conditionArr) : ''
+
+                    if (this.more != 1 && this.more != 2) {
+                        this.more = 1
+
+                        if (this.filterMini.active != -1) {
+                            
+                            axios.get(`{sp:U('getBigVegetable')}?id=${this.filterMini.content[this.filterMini.active].id}&name=${this.filterMini.content[this.filterMini.active].name}&page=10`).then(res => {
+                                
+                                this.more = 0
+                                
+                                if (res.data.status) {
+                                    if (res.data.material.length > 0) {
+                                        
+                                        this.menus.push(...this.menusCompute(res.data.material))
+                                    } else {
+                                        // 没有更多数据
+                                        this.more = 2
+                                    }
+                                        
+                                } else {
+                                    console.log(res.data.error)
+                                }
+                            })
+
+                            return false
+                        }
+                        
+                        this.getMenu(10, condition).then(res => {
+
+                            this.more = 0
+
+                            if (res.data.status) {
+                                if (res.data.material.length > 0) {
+                                    
+                                    this.menus.push(...this.menusCompute(res.data.material))
+                                } else {
+                                    // 没有更多数据
+                                    this.more = 2
+                                }
+                                    
+                            } else {
+                                console.log(res.data.error)
+                            }
+                        }).catch(error => {
+                                console.log(error)
+                        })
+                    }
+                }
+            }, {
+                threshold: [1],
+                rootMargin: '0px 0px 50px 0px',
+            })
+            
+            io.observe(fmini)
+            io.observe(bottom)
+            
+        },
+        computed: {
+            filterCpt() {
+                return function(i1, tag) {
+                    if (this['classify'+tag].stateMore[i1] == 1) {
+                       return this['classify'+tag].content[i1].value.slice(0, 5) 
+                    } else {
+                        return this['classify'+tag].content[i1].value
+                    }
+                }
+            }
+        },
+        methods: {
+    		getMenu(page = 0, condition = '') {
+    			return axios.get(`{sp:U('indexVegetable')}?page=${page}&checkedObj=${condition}`)
+    		},
+            menusCompute(data) {
+                return data.map(item => {
+                    
+                    const w = this.screenWidth/2 - 10
+                    const h = w/(item.imgInfo[0]/item.imgInfo[1]) + 65
+
+                    item.imgInfo.w = w
+                    item.imgInfo.h = h
+
+                    return item
+                })
+            },
+            filterMore() {
+            	this.toggleFilter()
+                
+                document.body.className = 'filter-open'
+
+                if (this.classifyA.content.length > 0) return false
+
+                let node = this.tips.showLoading()
+                node.style.display = 'block'
+               
+                axios({
+                    method: 'post',
+                    url: "{sp:U('vegetableSearch')}",
+
+                }).then(res => {
+                	// console.log(res.data)
+                    const sort = res.data.sort
+
+                    node.style.display = 'none'
+                    for (var i = 0; i < sort.length; i++) {
+                        for (var j = 0; j < sort[i]["menu"].length; j++) {
+                            this.classifyA.content.push({
+                                key: 'nav',
+                                id: sort[i]["menu"][j].id,
+                                name: sort[i]["menu"][j].name,
+                                value: sort[i]["menu"][j].option,
+                                attrId:0
+                            })
+
+                            if (sort[i]["menu"][j].option.length < 6) {
+                                this.classifyA.stateMore.push(0)
+                            } else {
+                                this.classifyA.stateMore.push(1)
+                            }
+                        }
+                    }
+                    for (var i = 0; i < res.data.side.length; i++) {
+                        this.classifyC.content.push({
+                            key: 'side',
+                            id: res.data.side[i].id,
+                            name: res.data.side[i].name,
+                            value: res.data.side[i].ket,
+                            attrId: 0
+                        })
+
+                        if (res.data.side[i].ket.length < 6) {
+                            this.classifyC.stateMore.push(0)
+                        } else {
+                            this.classifyC.stateMore.push(1)
+                        }
+                    }
+                    this.classifyC.content.push({
+                        id: 0,
+                        key: 'material',
+                        name: '食材筛选',
+                        value: res.data.material
+                    })
+
+                    if (res.data.material.length < 6) {
+                        this.classifyC.stateMore.push(0)
+                    } else {
+                        this.classifyC.stateMore.push(1)
+                    }
+
+                })
+            },
+            toggleFilter() {
+            		this.filter = !this.filter
+            },
+            checkedA(i1, i2) {
+            	let classifyA = this.classifyA
+            	const content = classifyA.content
+
+            	if (classifyA.active[0]==i1 && classifyA.active[1]==i2) {
+                  classifyA.active = []
+                  this.classifyA.checked.shift()
+                  return false
+              } else {
+                  classifyA.active = [i1, i2]
+              }
+              
+              this.classifyA.checked[0] = {
+              	id: content[classifyA.active[0]].value[classifyA.active[1]].id,
+                name: content[classifyA.active[0]].value[classifyA.active[1]].name,
+                key: content[classifyA.active[0]].key+'_'+content[classifyA.active[0]].id
+              }
+            },
+            checkedC(i1, i2) {
+            	const content = this.classifyC.content
+            	const b1 = this.classifyC.active.some(curr => {
+                  return curr[0]==i1
+              })
+              const b2 = this.classifyC.active.some(curr => {
+                  return curr[0]==i1&&curr[1]==i2
+              })
+              if (b1) {
+                  const i = this.classifyC.active.findIndex(curr => {
+                      return curr[0]==i1
+                  })
+                  
+                  this.classifyC.active.splice(i,1)
+                  if (!b2) { //不是是自己
+                      this.classifyC.active.push([i1,i2])
+                  } 
+              } else {
+                  this.classifyC.active.push([i1, i2])
+              }
+              this.classifyC.checked = this.classifyC.active.map(curr => {
+                  return {
+                      id: content[curr[0]].value[curr[1]].id,
+                      name: content[curr[0]].value[curr[1]].name,
+                      key: content[curr[0]].key+'_'+content[curr[0]].id
+                  }
+              })
+              
+            },
+            returnB(i1, i2) {
+                return this.classifyC.active.some(curr => {
+                    return curr[0]==i1&&curr[1]==i2
+                })
+            },
+            moreHandleA(i1) {
+                const smore = this.classifyA.stateMore
+
+                if (smore[i1] == 1) {
+                    smore.splice(i1, 1, 2)
+                } else {
+                    smore.splice(i1, 1, 1)
+                }
+            },
+            moreHandleC(i1) {
+                const smore = this.classifyC.stateMore
+
+               if (smore[i1] == 1) {
+                    smore.splice(i1, 1, 2)
+                } else {
+                    smore.splice(i1, 1, 1)
+                } 
+            },
+            fMiniHandle(i) {
+                
+                let node = this.tips.showLoading()
+                node.style.display = 'block'
+                let filterMini = this.filterMini
+                let id = ''
+                let name = ''
+                const top = this.$refs.fmini.getBoundingClientRect().top
+                
+                // 清空详细筛选 两种筛选条件只能存在一种
+                this.classifyA.active = []
+                this.classifyC.active = []
+
+                // 初始化more
+                this.more = 0
+
+                if (i != filterMini.active) {
+                    id = filterMini.content[i].id
+                    name = filterMini.content[i].name
+                }
+                axios.get(`{sp:U('getBigVegetable')}?id=${id}&name=${name}`).then(res => {
+                    node.style.display = 'none'
+                    
+                    if (i == filterMini.active) {
+                        filterMini.active = -1
+                    } else {
+                        filterMini.active = i
+                    }
+                    if (top < 1) {
+                        document.documentElement.scrollTop = this.$refs.fmini.offsetTop
+                        document.body.scrollTop = this.$refs.fmini.offsetTop
+                    }
+                    this.menus = this.menusCompute(res.data.material)
+                })
+            },
+            submitFilter() {
+        		this.toggleFilter()
+
+                let node = this.tips.showLoading()
+                node.style.display = 'block'
+
+                // 清除mini筛选
+                this.filterMini.active = -1
+                
+                // 初始化more状态开始新一轮筛选
+                this.more = 0
+
+                this.getMenu(0, JSON.stringify([...this.classifyA.checked,...this.classifyC.checked])).then(res => {
+                    node.style.display = 'none'
+
+                    if (res.data.material == '' || res.data.material == null) {
+                        this.tips.msg('没有符合条件的数据~')
+                        return false
+                    }
+                    this.menus = this.menusCompute(res.data.material)
+                })
+            }
+        },
+        watch: {
+            filter(n, o) {
+                if (n) {
+                    document.body.className = 'filter-open'
+                } else {
+                    document.body.className = ''
+                }
+            }
+        }
+    });
+
+    var mySwiper = new Swiper('.swiper-container', {
+        // 垂直切换选项
+        effect: 'coverflow',
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        loop: true, // 循环模式选项
+        coverflowEffect: {
+            rotate: 50,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows: true,
+        },
+
+    });
+
+    (function performanceTest() {
+        let timing = performance.timing,
+        readyStart = timing.fetchStart - timing.navigationStart,
+        redirectTime = timing.redirectEnd - timing.redirectStart,
+        appcacheTime = timing.domainLookupStart - timing.fetchStart,
+        unloadEventTime = timing.unloadEventEnd - timing.unloadEventStart,
+        lookupDomainTime = timing.domainLookupEnd - timing.domainLookupStart,
+        connectTime = timing.connectEnd - timing.connectStart,
+        requestTime = timing.responseEnd - timing.requestStart,
+        initDomTreeTime = timing.domInteractive - timing.responseEnd,
+        domReadyTime = timing.domComplete - timing.domInteractive,
+        loadEventTime = timing.loadEventEnd - timing.loadEventStart,
+        loadTime = timing.loadEventEnd - timing.navigationStart;
+                
+        console.log('准备新页面时间耗时：'+readyStart);
+        console.log('redirect 重定向耗时：'+redirectTime);
+        console.log('Appcache 耗时'+appcacheTime);
+        console.log('unload 前文档耗时：'+unloadEventTime);
+        console.log('DNS 查询耗时：'+lookupDomainTime);
+        console.log('TCP 连接耗时：'+connectTime);
+        console.log('request 请求耗时：'+requestTime);
+        console.log('请求完毕至DOM加载：'+initDomTreeTime);
+        console.log('解析DOM树耗时：'+domReadyTime);
+        console.log('Load事件耗时：'+loadEventTime);
+        console.log('加载时间耗时：'+loadTime);
+    })();
+
+</script>
+</body>
+</html>
